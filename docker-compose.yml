@@ -1,0 +1,35 @@
+version: "3.3"
+
+services:
+
+  flask:
+    build:
+      context: ./flask
+    container_name: tonnect-flask
+    command: sh -c "cd /usr/src/flask && python -m app"
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./flask:/usr/src/tonnect-flask
+    depends_on:
+      - redis
+
+  bot:
+    build:
+      context: ./bot
+    container_name: tonnect-bot
+    command: sh -c "cd /usr/src/bot && python -m app"
+    restart: always
+    volumes:
+      - ./bot:/usr/src/bot
+    depends_on:
+      - flask
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: tonnect-redis
+    restart: always
+    volumes:
+      - ./redis/data/:/data
